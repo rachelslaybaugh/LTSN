@@ -1,0 +1,365 @@
+\documentclass[preprint,12pt,authoryear]{elsarticle}
+
+\usepackage{amsthm} % theorems AMS style
+\usepackage{amssymb} % math symbols
+\usepackage{amstext} % typeset text in math environments
+\usepackage{amsmath} % AMS math­e­mat­i­cal fa­cil­i­ties
+\usepackage{bm} % bold symbols in math
+\usepackage{graphicx} % enhanced support for graphics
+\usepackage{epstopdf} % con­vert EPS to 'en­cap­su­lated' PDF us­ing ghostscript
+\usepackage{subcaption} % support for subcaptions
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{lineno,hyperref}
+\usepackage[capitalize]{cleveref} % in­tel­li­gent cross-ref­er­enc­ing
+\usepackage[makeroom]{cancel} %cancel terms
+\usepackage{multirow}
+
+
+\modulolinenumbers[5]
+
+% Adjusting page layouts and margins
+\pagestyle{plain}
+\renewcommand{\baselinestretch}{1.0} 
+\setlength{\topmargin}{-0.5in} 
+\setlength{\oddsidemargin}{0.in} 
+\setlength{\evensidemargin}{0.in} 
+\setlength{\textwidth}{6.5in} 
+\setlength{\textheight}{9.0in} 
+\setlength{\parskip}{0pt}    
+
+%\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
+
+% Adjusting cleveref package
+\crefalias{subequation}{equation} % subequations counter = equations counter
+\crefalias{eqnarray}{equation} % subequations counter = equations counter
+\crefformat{pluraleq}{Eqs.~(#2#1#3)} % defining "plural" equations  
+\Crefformat{pluraleq}{Equations~(#2#1#3)} % defining "plural" equations  
+
+\newcommand{\SN}{S$_N$}
+\renewcommand{\vec}[1]{\bm{#1}} %vector is bold italic
+\newcommand{\vd}{\bm{\cdot}} % slightly bold vector dot
+\newcommand{\grad}{\vec{\nabla}} % gradient
+\newcommand{\ud}{\mathop{}\!\mathrm{d}} % upright derivative symbol
+\def\bal#1\nal{\begin{align}#1\end{align}}
+\def\bala#1\nala{\begin{align*}#1\end{align*}}
+\def\bsub#1\nsub{\begin{subequations}#1\end{subequations}}
+\newcommand{\f}{\frac}
+\newcommand{\ux}{{\bm x}}
+\newcommand{\un}{{\bm n}}
+\newcommand{\unab}{{\bf \nabla}}
+\newcommand{\bg}{\big>}
+\newcommand{\bl}{\big<}
+\newcommand{\su}{\big< s\big>}
+\newcommand{\sd}{\big< s^2\big>}
+\newcommand{\st}{\big< s^3\big>}
+\newcommand{\sq}{\big< s^4\big>}
+\renewcommand{\sc}{\big< s^5\big>}
+\renewcommand{\ss}{\big< s^6\big>}
+\newcommand{\sue}{\big< s\big>_\epsilon}
+\newcommand{\sde}{\big< s^2\big>_\epsilon}
+\newcommand{\ste}{\big< s^3\big>_\epsilon}
+\newcommand{\sqe}{\big< s^4\big>_\epsilon}
+\newcommand{\sce}{\big< s^5\big>_\epsilon}
+\newcommand{\sse}{\big< s^6\big>_\epsilon}
+\newcommand{\wsa}{\widehat\Sigma_a}
+\newcommand{\wst}{\widehat\Sigma_t}
+\newcommand{\wq}{\widehat Q}
+\newcommand{\ep}{\varepsilon}
+\newcommand{\vi}{{\varphi}}
+\newcommand{\uom}{{\bf \Omega}}
+\newcommand{\setb}{\mathcal{B}}
+
+\journal{TBD - Annals? JQSRT? JCP? }
+
+\bibliographystyle{elsarticle-harv.bst}\biboptions{authoryear}
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{A Spectral Approach to the Nonclassical Transport Equation\\
+(tentative title)}
+
+%% Group authors per affiliation:
+\author[ucb]{R. Vasques\corref{cor1}}
+\author[ufrgs]{C.F. Segatto \fnref{segatto}}
+\author[ucb]{R.N. Slaybaugh\fnref{slaybaugh}}
+
+\address[ucb]{University of California, Berkeley, Department of Nuclear Engineering, 4155 Etcheverry Hall \\ Berkeley, CA 94720-1730}
+\address[ufrgs]{UFRGS - Federal University of Rio Grande do Sul, Av. Osvaldo Aranha 99, 90046-900\\ Porto Alegre, RS, Brazil}
+
+\cortext[cor1]{Corresponding author: richard.vasques@fulbrightmail.org; Tel: (510) 340 0930\\
+Postal address: University of California, Berkeley, Department of Nuclear Engineering, 4103 Etcheverry Hall, Berkeley, CA 94720-1730}
+\fntext[cegatto]{cynthia.segatto@ufrgs.br}
+\fntext[slaybaugh]{slaybaugh@berkeley.edu}
+
+\begin{abstract}
+
+These notes describe an approach to manipulate the nonclassical transport equation into a classical form that can be numerically solved through traditional approaches. 
+The approach uses a combination of the spectral method and source iteration to eliminate the $s$-dependence.
+We use the LTS$_N$ method to solve the resulting equation in a 1-D system. 
+ 
+\end{abstract}
+
+\begin{keyword}
+tbd \sep tbd 
+\end{keyword}
+
+\end{frontmatter}
+
+\section{Introduction}\label{sec1}
+\setcounter{section}{1}
+\setcounter{equation}{0} 
+
+\section{Nonclassical Transport Equation}\label{sec2}
+\setcounter{section}{2}
+%\setcounter{equation}{0} 
+
+Consider the one-speed nonclassical transport equation with isotropic scattering given by
+\bsub\label[pluraleq]{1}
+\bal
+\f{\partial }{\partial s}\Psi(\ux,\uom,s) + \uom\cdot\unab&\Psi(\ux,\uom,s) + \Sigma_t(\uom,s)\Psi (\ux,\uom,s) = \label{1a}\\
+& \f{\delta(s)}{4\pi}\left[\int_{4\pi}\int_0^{\infty}c\Sigma_t(\uom',s')\Psi(\ux,\uom',s')d\Omega' ds' + Q(\ux)\right],\quad \ux\in V,\nonumber
+\nal
+subject to the vacuum boundary condition
+\bal
+%\Psi(0,\mu,s) &= \delta(s)f(\mu), \quad \mu > 0,\\
+%\Psi(X,\mu,s) &= \delta(s)g(\mu), \quad \mu < 0.
+\Psi(\ux_b,\uom,s) &= 0, \quad \un\cdot\uom< 0, \quad \ux_b\in\partial V.
+%\Psi(X,\mu,s) &= 0, \quad \mu < 0.
+\nal
+\nsub
+Here, $\ux=(x,y,z)$, $\uom = (\Omega_x,\Omega_y,\Omega_z)$, $s$ describes the free-path of a particle, $\Psi$ is the nonclassical angular flux, $c$ is the scattering ratio, and $Q$ is an isotropic source. 
+The angular-dependent nonclassical total cross section $\Sigma_t(\uom,s)$ satisfies
+\bal
+p(\uom,s) = \Sigma_t(\uom,s)e^{-\int_0^s \Sigma_t(\uom,s')ds'},
+\nal
+where $p(\uom,s)$ is the free-path distribution function in the direction $\uom$.
+
+It is useful to work with \cref{1a} in an equivalent ``initial value'' form:
+\bsub\label[pluraleq]{3}
+\bal
+&\f{\partial }{\partial s}\Psi(\ux,\uom,s) + \uom\cdot\unab\Psi(\ux,\uom,s) + \Sigma_t(\uom,s)\Psi (\ux,\uom,s) = 0,\\
+& \Psi(\ux,\uom,0)=\f{1}{4\pi}\left[\int_{4\pi}\int_0^{\infty}c\Sigma_t(\uom',s')\Psi(\ux,\uom',s')d\Omega' ds' + Q(\ux)\right].
+\nal
+\nsub
+Let us define $\psi$ such that
+\bal\label{4}
+\Psi(\ux,\uom,s)\equiv \psi(\ux,\uom,s)e^{-\int_0^s \Sigma_t(\uom,s')ds'}.
+\nal
+We can now rewrite the nonclassical problem as
+\bsub\label[pluraleq]{5}
+\bal
+&\f{\partial }{\partial s}\psi(\ux,\uom,s) + \uom\cdot\unab\psi(\ux,\uom,s) = 0,\label{5a}\\
+& \psi(\ux,\uom,0)=\f{1}{4\pi}\left[\underbrace{\int_{4\pi}\int_0^{\infty}c p(\uom',s')\psi(\ux,\uom',s')d\Omega' ds'}_{S(\ux)} + Q(\ux)\right] = \f{S(\ux)}{4\pi}+\f{Q(\ux)}{4\pi}, \label{5b}\\
+%&\psi(0,\mu,s) = \delta(s)f(\mu), \quad \mu > 0,\\
+%&\psi(X,\mu,s) = \delta(s)g(\mu), \quad \mu < 0.
+&\psi(\ux_b,\uom,s) = \quad \un\cdot\uom< 0, \quad \ux_b\in\partial V.
+%&\psi(X,\mu,s) = 0, \quad \mu < 0.
+\nal
+\nsub
+
+We will take advantage of the initial value form of \cref{5} by using source iteration. We define
+\bal\label{6}
+\psi(\ux,\uom,s) = \sum_{k=0}^K \psi^{(k)}(\ux,\uom,s),
+\nal
+where $\psi^{(k)}$ represents particles in the angular flux that have undergone \textit{exactly} $k$ collisions.
+It is easy to see that $\psi^{(k)}$ satisfies
+\bsub\label[pluraleq]{7}
+\bal
+&\f{\partial }{\partial s}\psi^{(k)}(\ux,\uom,s) + \uom\cdot\unab\psi^{(k)}(\ux,\uom,s) = 0,\label{7a}\\
+& \psi^{(k)}(\ux,\uom,0)= F^{(k)}(\ux) = \left\{\begin{array}{cc}
+\f{Q(\ux)}{4\pi}, & k=0,\\
+\f{S^{(k-1)}(\ux)}{4\pi}, & k > 0,
+\end{array}
+\right., \label{7b}\\
+%&\psi^{(k)}(0,\mu,s) = \left\{\begin{array}{ccc}
+%\delta(s)f(\mu), & \mu > 0, & k=0,\\
+%0, & \mu > 0, & k > 0,
+%\end{array}
+%\right.\\
+&\psi^{(k)}(\ux_b,\uom,s) = 0,\quad \un\cdot\uom< 0, \quad \ux_b\in\partial V.
+%&\psi^{(k)}(X,\mu,s) = \left\{\begin{array}{ccc}
+%\delta(s)g(\mu), & \mu < 0, & k=0,\\
+%0, & \mu < 0, & k > 0,
+%\end{array}
+%\right.
+%&\psi^{(k)}(X,\mu,s) = 0, \quad \mu <0,
+\nal
+\nsub
+where $S^{(k-1)}(\ux) = \int_{4\pi}\int_0^{\infty}c p(\uom',s')\psi^{(k-1)}(\ux,\uom',s')d\Omega' ds'$.
+
+The idea in these notes is to use the spectral method to eliminate the $s$-dependence in \cref{7}.
+
+\section{The Spectral Method}\label{sec3}
+\setcounter{section}{3}
+%\setcounter{equation}{0} 
+
+To eliminate the dependence on $s$, we approximate $\psi^{(k)}$ by a truncated series of Laguerre polynomials $\{ L_0(s), L_1(s), ..., L_M(s)\}$ such that
+\bal\label{8}
+\psi^{(k)}(\ux,\uom,s) = \sum_{m=0}^{M} \psi^{(k)}_m(\ux,\uom)L_m(s).
+\nal  
+The Laguerre polynomials are orthogonal with respect to the weight function $e^{-s}$; that is,
+\bal
+\int_0^{\infty} e^{-s}L_j(s)L_m(s)ds =
+\left\{\begin{array}{cc}
+0 & j\neq m,\\
+1 & j = m.
+\end{array}
+\right.
+\nal
+We multiply \cref{7a} by $e^{-s}L_m(s)$ and operate on it by $\int_0^\infty (\cdot)ds$ (truncating in $M$) to obtain
+\bal
+\uom\cdot\unab\psi^{(k)}_m(\ux,\uom) = \sum_{j=m+1}^M\psi^{(k)}_j(\ux,\uom).
+\nal
+\Cref{7b,8} give us
+\bal
+\sum_{j=m+1}^M\psi^{(k)}_j(\ux,\uom) = F^{(k)}(\ux)  - \sum_{j=0}^m\psi_j^{(k)}(\ux,\uom).
+\nal
+We now have
+\bsub\label[pluraleq]{12}
+\bal
+&\uom\cdot\unab\psi^{(k)}_m(\ux,\uom) + \psi^{(k)}_m(\ux,\uom) = U^{(k)}_m(\ux,\uom),\\
+%&\psi^{(k)}_m(0,\mu) = \left\{\begin{array}{ccc}
+%f(\mu)=e^{-s/2}\sum_{j=0}^ML_j(s), & \mu > 0, & m=0,\\
+%0, & \mu > 0, & m\neq 0,
+%\end{array}
+%\right.\\
+%&\psi_m(X,\mu) = \left\{\begin{array}{ccc}
+%g(\mu), & \mu < 0, & m=0,\\
+%0, & \mu < 0, & m\neq 0.
+%\end{array}
+%\right.\\
+&\psi^{(k)}_m(\ux_b,\uom) = 0, \quad \un\cdot\uom< 0, \quad \ux_b\in\partial V,
+%&\psi^{(k)}_m(X,\mu) = 0, \quad \mu<0.
+\nal
+\nsub
+where
+\bsub
+\bal
+U^{(k)}_0(\ux,\uom) &= F^{(k)}(\ux),\\
+U^{(k)}_m(\ux,\uom) &= U^{(k)}_{m-1}(\ux,\uom) - \psi^{(k)}_{m-1}(\ux,\uom), \quad m=1,...,M.
+\nal
+\nsub
+%Both $F^{(k)}(\ux)$ and $\psi_j^{(k)}(\ux,\uom)$ are known for $j<m$.
+For each step $m$, $U_m^{(k)}$ is a known function.
+\Cref{12} have the form of a \textit{classical} purely absorbing homogeneous system with a fixed source and $\Sigma_t=\Sigma_a=1$.
+That is, \cref{12} can be solved using \textit{any} established homogeneous solver. 
+
+A simple sketch of the algorithm follows:
+\begin{itemize}
+\item ``While'' loop: $k = 0,1,2,...$ (uses a stopping criterion)
+\begin{itemize}
+\item Closed loop: $m=0,1,...,M$
+\begin{itemize}
+\item Apply homogeneous solver to \cref{12} and obtain $\psi^{(k)}_m$
+\end{itemize}
+\item Check stopping criterion
+\end{itemize}
+\item Obtain the classical angular flux:
+$$\hat\Psi(\ux,\uom) = \int_0^\infty \Psi(\ux,\uom,s)ds =  \int_0^{\infty} \left(e^{-\int_0^s\Sigma_t(\uom,s')ds'}\sum_{k=0}^{K}\sum_{m=0}^M\psi^{(k)}_m(\ux,\uom)L_m(s)\right)ds$$
+\end{itemize}
+
+In the next section we apply this approach to a 1-D problem using the LTS$_N$ method to solve \cref{12}.
+
+\section{The LTS$_N$ Approach}\label{sec4}
+\setcounter{section}{4}
+%\setcounter{equation}{0} 
+
+Let the coefficients $\mu_n$ and $\omega_n$ represent the zeros and weights of the Gauss-Legendre quadrature.
+We define
+\bsub
+\bal
+\psi^{(k)}_{m,n}(x) &= \psi^{(k)}_{m}(x,\mu_n),\\
+U^{(k)}_{0,n}(x) &= U^{(k)}_{0}(x,\mu_n) = F^{(k)}(x),\\
+U^{(k)}_{m,n}(x) &= U^{(k)}_{m-1,n}(x) - \psi_{m-1,n}^{(k)}(x) = U^{(k)}_{m-1}(x,\mu_n) - \psi_{m-1}^{(k)}(x,\mu_n),
+\nal
+where
+\bal
+F^{(0)}(\ux) &= \f{Q(\ux)}{2}, \\
+F^{(k)}(\ux) &= \f{c}{2}\int_0^\infty \sum_{n=1}^N \left(\omega_n p_n(s)\sum_{m=1}^{M} \psi^{(k-1)}_{m,n}L_m(s)\right)ds, \quad k =1,2,...,\label{14e}
+\nal
+and
+\bal
+p_n(s) = p(\mu_n,s).
+\nal
+\nsub
+Now, we can write the corresponding 1-D S$_N$ problem to \cref{12} as
+\bsub
+\bal
+&\mu_n\f{\partial }{\partial x}\psi^{(k)}_{m,n}(x) + \psi^{(k)}_{m,n}(x) = U^{(k)}_{m,n}(x),\\
+&\psi^{(k)}_{m,n}(0) = \psi^{(k)}_{m,N-n+1}(0), \quad n=1,...,N/2,\\
+&\psi^{(k)}_{m,n}(X) = 0, \quad n=N/2+1,...,N.
+\nal
+\nsub
+Applying the LTS$_N$ method to this problem, we obtain an analytical formulation for $\psi_{m,n}^{(k)}$:
+\bal\label{16}
+\psi_{m,n}^{(k)}(x) = & \sum_{i=1}^{N/2}\Bigg[\alpha(n,i)\left(e^{\gamma(i)(x-H)}+e^{\gamma(i+N/2)x}\right)\Gamma_{m,i}^{(k)} \,+ \\
+& \quad  \sum_{j=1}^N \alpha(n,i)\left(\int_H^x e^{\gamma(i)(x-\tau)}U_{m,j}^{(k)}(\tau)d\tau + \int_0^x e^{\gamma(i+N/2)(x-\tau)}U_{m,j}^{(k)}(\tau)d\tau\right)\beta(i,j)\Bigg],\nonumber
+\nal
+where $\gamma(i)$ are the eigenvalues resulting from the diagonalization of the LTS$_N$ matrix, $\alpha(n,i)$ are the components of the eigenvector matrix, and $\beta(i,j)$ are the components of its inverse.
+The coefficients $\Gamma_{m,i}^{(k)}$ are determined from the boundary conditions.
+
+\section{Numerical Results}\label{sec5}
+\setcounter{section}{5}
+%\setcounter{equation}{0} 
+
+\section{Conclusion}\label{sec6}
+\setcounter{section}{6}
+%\setcounter{equation}{0} 
+
+\section*{Comments}
+\setcounter{section}{4}
+%\setcounter{equation}{0} 
+
+\begin{itemize}
+\item While we do not explicitly discretize $s$, the following takes place:
+\begin{itemize}
+\item $\psi(x,\mu,s)$ is approximated by a truncated series of Laguerre polynomials in $s$
+\item The integral in $s$ described in \cref{14e} will probably need to be performed numerically
+\item At the end of the algorithm, we need to calculate
+$$\hat\Psi(\ux,\uom) = \int_0^\infty \Psi(\ux,\uom,s)ds =  \int_0^{\infty} \left(e^{-\int_0^s\Sigma_t(\uom,s')ds'}\sum_{k=0}^{K}\sum_{m=0}^M\psi^{(k)}_m(\ux,\uom)L_m(s)\right)ds,$$
+which will also need to be performed numerically 
+\end{itemize}
+\item The convolution integrals in \cref{16} will \textit{probably} need to be solved numerically due to the recursiveness of the problem arising from the source term. \textbf{Is there a way to do that analitically?}
+\item Due to the source iteration approach, convergence will be slow as problems become more diffusive.
+\item It is not clear to me what will be the more time-consuming step. My guess is that the time to converge the source iteration will dominate in diffusive problems; for absorbing problems, I do not know.   
+\item Nonclassical boundary conditions are tricky: incoming fluxes will have a $\delta(s)$. I need to think more about the best approach in those cases; it is possible that the best solution will be using the \textit{forward} nonclassical equation. That, however, is beyond the current scope.
+\item To validate the method, we can apply the algorithm to solve a classical problem. In that case, $p(\mu,s) = \Sigma_te^{-\Sigma_t s}$. This will also allow us to see how efficiently the solver works.
+\item After it is validated, we can apply the algorithm to the random periodic case we have been working on; after that, we can go for general stochastic mixtures.
+\end{itemize}
+
+\section*{References}
+
+\bibliography{ANE-16}
+
+\end{document}
+
+
+\pagebreak
+
+\noindent
+{\bf FIGURE CAPTIONS}
+
+\begin{figure}[H]
+ \centering
+% \includegraphics[scale=1]{fig1.eps} 
+\caption{\footnotesize{DDM approach to solve the deterministic problem}}\label{fig1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+% \includegraphics[scale=1]{fig2.eps} 
+\caption{\footnotesize{Double-DDM approach to solve the stochastic problem}}\label{fig2}
+\end{figure}
+
+\begin{figure}[H] 
+ \centering
+% \includegraphics[scale=1.0]{fig3.eps} 
+ \caption{\footnotesize{Neutron density for a sinusoidal reactivity $\rho(t) = 0.00073\sin(t)$}}\label{fig3}
+\end{figure}
+
+\end{document}
+
